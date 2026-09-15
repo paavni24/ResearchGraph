@@ -1,0 +1,32 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.DS_Store
+.idea/
+.vscode/
+
+# Private research corpus and generated indexes/state
+papers/
+data/
+*.sqlite3
+*.sqlite3-*
+*.db
+
+# Build and runtime output
+dist/
+*.egg-info/
+neo4j-data/
+neo4j-logs/
+*.log
+
+# Personal project notes
+INTERVIEW_GUIDE.md
+KNOWLEDGE_GRAPH.md
+SYSTEM_DESIGN_AND_PROJECT_FLOW.md

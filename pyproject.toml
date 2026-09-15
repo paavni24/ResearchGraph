@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "research-paper-rag"
+version = "0.1.0"
+description = "A transparent baseline RAG service for research papers"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "chromadb>=1.0,<2",
+  "fastapi>=0.115,<1",
+  "neo4j>=5.28,<7",
+  "openai>=1.68,<3",
+  "pydantic-settings>=2.8,<3",
+  "pypdf>=5.3,<7",
+  "python-multipart>=0.0.20,<1",
+  "tiktoken>=0.9,<1",
+  "uvicorn[standard]>=0.34,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<10",
+  "ruff>=0.11,<1",
+]
+
+[project.scripts]
+research-rag = "research_rag.cli:main"
+research-graph = "research_rag.graph_cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/research_rag"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

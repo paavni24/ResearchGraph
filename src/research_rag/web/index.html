@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Hybrid retrieval across research papers" />
+    <title>ResearchGraph — Ask your literature</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]],
+          displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+          processEscapes: true
+        },
+        svg: { fontCache: "global" },
+        startup: { typeset: false }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Application navigation">
+        <a class="brand" href="/" aria-label="ResearchGraph home">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i><i></i>
+          </span>
+          <span>ResearchGraph</span>
+        </a>
+
+        <button class="new-chat" id="new-chat" type="button">
+          <span aria-hidden="true">＋</span> New inquiry
+        </button>
+
+        <nav class="nav-section" aria-label="Workspace">
+          <p class="eyebrow">Workspace</p>
+          <button class="nav-item active" type="button" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">⌁</span>
+            Literature chat
+          </button>
+          <button class="nav-item" id="open-upload" type="button">
+            <span class="nav-icon" aria-hidden="true">⇧</span>
+            Add papers
+          </button>
+          <a class="nav-item" href="/docs" target="_blank" rel="noreferrer">
+            <span class="nav-icon" aria-hidden="true">↗</span>
+            API reference
+          </a>
+        </nav>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobile-menu" aria-label="Toggle navigation">☰</button>
+          <div>
+            <p class="eyebrow">Hybrid research assistant</p>
+            <h1>Literature chat</h1>
+          </div>
+          <div class="topbar-actions">
+            <span class="mode-pill"><i></i> Evidence mode</span>
+            <button class="icon-button" id="top-upload" type="button" aria-label="Add papers">⇧</button>
+          </div>
+        </header>
+
+        <section class="conversation" id="conversation" aria-live="polite">
+          <div class="welcome" id="welcome">
+            <div class="welcome-kicker"><span></span> Your research, connected</div>
+            <h2>Ask across papers.<br /><em>Follow the evidence.</em></h2>
+            <p> </p>
+
+            <div class="method-grid" aria-label="Retrieval methods">
+              <article class="method-card vector-card">
+                <div class="method-number">01</div>
+                <div class="method-symbol">◌</div>
+                <h3>Semantic</h3>
+                <p>Finds conceptually similar passages, even when the wording differs.</p>
+              </article>
+              <article class="method-card fulltext-card">
+                <div class="method-number">02</div>
+                <div class="method-symbol">Aa</div>
+                <h3>Lexical</h3>
+                <p>Surfaces exact terminology, metrics, model names, and quoted phrases.</p>
+              </article>
+              <article class="method-card graph-card">
+                <div class="method-number">03</div>
+                <div class="method-symbol">⌘</div>
+                <h3>Relational</h3>
+                <p>Traverses authors, methods, datasets, claims, and supporting evidence.</p>
+              </article>
+            </div>
+
+            <div class="starter-block">
+              <p class="eyebrow">Try an inquiry</p>
+              <div class="starter-list">
+                <button class="starter" type="button">How does the Transformer use multi-head attention?</button>
+                <button class="starter" type="button">Which datasets are used for machine translation?</button>
+                <button class="starter" type="button">Compare Transformers with recurrent sequence models.</button>
+              </div>
+            </div>
+          </div>
+          <div class="messages" id="messages"></div>
+        </section>
+
+        <footer class="composer-wrap">
+          <form class="composer" id="question-form">
+            <label class="sr-only" for="question">Ask a question about your papers</label>
+            <textarea
+              id="question"
+              rows="1"
+              maxlength="10000"
+              placeholder="Ask a question across your research library…"
+              data-testid="question-input"
+            ></textarea>
+            <div class="composer-footer">
+              <div class="composer-options">
+                <label for="top-k">Sources</label>
+                <select id="top-k" aria-label="Number of final sources">
+                  <option value="4">4</option>
+                  <option value="6" selected>6</option>
+                  <option value="8">8</option>
+                </select>
+                <span class="shortcut">Shift ↵ for new line</span>
+              </div>
+              <button class="send-button" id="send-button" type="submit" aria-label="Ask question">
+                <span>Ask</span><b aria-hidden="true">↑</b>
+              </button>
+            </div>
+          </form>
+          <p class="disclaimer">Answers are generated from retrieved papers. Verify important claims in the cited source.</p>
+        </footer>
+      </main>
+    </div>
+
+    <dialog class="upload-dialog" id="upload-dialog">
+      <form method="dialog" class="dialog-head">
+        <div>
+          <p class="eyebrow">Library</p>
+          <h2>Add research papers</h2>
+        </div>
+        <button class="close-button" value="cancel" aria-label="Close upload dialog">×</button>
+      </form>
+      <p class="dialog-copy">Uploads are chunked into the semantic and full-text indexes.</p>
+      <label class="drop-zone" id="drop-zone" for="paper-files">
+        <span class="upload-symbol">⇧</span>
+        <strong>Choose PDF, Markdown, or text files</strong>
+        <small>Multiple files supported</small>
+        <input id="paper-files" type="file" accept=".pdf,.md,.txt" multiple />
+      </label>
+      <div class="file-summary" id="file-summary">No files selected</div>
+      <button class="upload-button" id="upload-button" type="button" disabled>Index selected papers</button>
+      <div class="upload-progress" id="upload-progress" hidden>
+        <span></span><p>Extracting, chunking, and embedding…</p>
+      </div>
+      <div class="graph-note">
+        <strong>Knowledge graph extraction is separate</strong>
+        <p>Keep a copy in <code>./papers</code>, then run <code>research-graph ingest ./papers</code> when you are ready for its API cost.</p>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status"></div>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>
